@@ -1,0 +1,11 @@
+Mark the pixels of {object} in {color} and leave the rest unchanged.
+Color the {object}'s pixels in {color}, keeping the remaining pixels unaltered.
+Apply {color} to the pixels of {object} while maintaining the current state of other pixels.
+Assign {color} to the pixels belonging to {object}, preserving the rest as they are.
+For {object}, set its pixels to {color} and let the others remain the same.
+Modify the pixels of {object} to {color} without affecting any other pixels.
+Set the {object} pixels to {color} and keep the other pixels in their original state.
+Update the pixels of {object} to {color}, but leave the other pixels untouched.
+Fill in the pixels of {object} with {color}, retaining the existing colors of the remaining pixels.
+Change the {object} pixels to {color}, while keeping the other pixels constant.
+Paint the pixels of {object} in {color} and maintain the current appearance of the other pixels.

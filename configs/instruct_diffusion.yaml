@@ -1,0 +1,256 @@
+# File modified by authors of InstructDiffusion from original (https://github.com/CompVis/stable-diffusion).
+# See more details in LICENSE.
+
+model:
+  base_learning_rate: 1.0e-04
+  weight_decay: 0.01
+  target: ldm.models.diffusion.ddpm_edit.LatentDiffusion
+  params:
+    fp16: True
+    deepspeed: 'deepspeed_1'
+    ckpt_path: stable_diffusion/models/ldm/stable-diffusion-v1/v1-5-pruned-emaonly-adaption.ckpt
+    linear_start: 0.00085
+    linear_end: 0.0120
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1000
+    first_stage_key: edited
+    cond_stage_key: edit
+    image_size: 32
+    channels: 4
+    cond_stage_trainable: false   # Note: different from the one we trained before
+    conditioning_key: hybrid
+    monitor: val/loss_simple_ema
+    scale_factor: 0.18215
+
+    scheduler_config: # 10000 warmup steps
+      target: ldm.lr_scheduler.LambdaLinearScheduler
+      params:
+        warm_up_steps: [ 0 ]
+        cycle_lengths: [ 10000000000000 ] # incredibly large number to prevent corner cases
+        f_start: [ 1.e-6 ]
+        f_max: [ 1. ]
+        f_min: [ 1. ]
+
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 32 # unused
+        in_channels: 8
+        out_channels: 4
+        model_channels: 320
+        attention_resolutions: [ 4, 2, 1 ]
+        num_res_blocks: 2
+        channel_mult: [ 1, 2, 4, 4 ]
+        num_heads: 8
+        use_spatial_transformer: True
+        transformer_depth: 1
+        context_dim: 768
+        use_checkpoint: True
+        legacy: False
+        force_type_convert: True
+
+    first_stage_config:
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        embed_dim: 4
+        monitor: val/rec_loss
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 2
+          - 4
+          - 4
+          num_res_blocks: 2
+          attn_resolutions: []
+          dropout: 0.0
+        lossconfig:
+          target: torch.nn.Identity
+
+    cond_stage_config:
+      target: ldm.modules.encoders.modules.FrozenCLIPEmbedder
+
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 64
+    num_workers: 4
+    train:
+
+      - ds1:
+        target: dataset.pose.pose.MPIIDataset
+        params:
+          root: data/mpii/
+          image_set: train
+          is_train: True
+          max_prompt_num: 5
+          min_prompt_num: 1
+          radius: 10
+      - ds2:
+        target: dataset.pose.pose.COCODataset
+        params:
+          root: data/coco/
+          image_set: train2017
+          is_train: True
+          max_prompt_num: 5
+          min_prompt_num: 1
+          radius: 10
+      - ds3:
+        target: dataset.pose.pose.CrowdPoseDataset
+        params:
+          root: data/crowdpose/
+          image_set: train
+          is_train: True
+          max_prompt_num: 5
+          min_prompt_num: 1
+          radius: 10
+      - ds4:
+        target: dataset.pose.pose.AICDataset
+        params:
+          root: data/aic/
+          image_set: train
+          is_train: True
+          max_prompt_num: 5
+          min_prompt_num: 1
+          radius: 10
+          sample_weight: 0.1
+
+      - ds5:
+        target: dataset.seg.coco_stuff.COCOStuffDataset
+        params:
+          path: data/coco-stuff
+          split: train2017
+          crop_res: 256
+          flip_prob: 0.5
+          transparency: 0.5
+          empty_percentage: 0.2
+      - ds6:
+        target: dataset.seg.grefcoco_segmentation.GrefCOCODataset
+        params:
+          path: data/coco_2014
+          split: train
+          min_resize_res: 256
+          max_resize_res: 256
+          crop_res: 256
+          flip_prob: 0.0
+          transparency: 0.5
+      - ds7:
+        target: dataset.seg.refcoco_segmentation.RefCOCODataset
+        params:
+          path: data/coco_2014
+          split: train
+          crop_res: 256
+          flip_prob: 0.0
+          transparency: 0.5
+
+      - ds8:
+        target: dataset.low_level.lowlevel_gopro.GoPro
+        params:
+          path: data/GoPro
+          split: train
+          size: 256
+          flip_prob: 0.5
+          interpolation: pil_lanczos
+          sample_weight: 2.0
+      - ds9:
+        target: dataset.low_level.lowlevel_reds.REDS
+        params:
+          path: data/REDS
+          split: train
+          size: 256
+          flip_prob: 0.5
+          interpolation: pil_lanczos
+          sample_weight: 0.2
+      - ds10:
+        target: dataset.low_level.lowlevel_sidd.SIDD
+        params:
+          path: data/SIDD
+          split: train
+          size: 256
+          flip_prob: 0.5
+          interpolation: pil_lanczos
+          sample_weight: 20
+      - ds11:
+        target: dataset.low_level.lowlevel_clwd.CLWD
+        params:
+          path: data/CLWD
+          split: train
+          size: 256
+          flip_prob: 0.5
+          interpolation: pil_lanczos
+          sample_weight: 0.2
+
+      - ds12:
+        target: dataset.editing.edit_zip_dataset.FilteredIP2PDataset
+        params:
+          path: data/clip-filtered-dataset
+          split: train
+          min_resize_res: 256
+          max_resize_res: 256
+          crop_res: 256
+          flip_prob: 0.5
+          sample_weight: 0.2
+      - ds13:
+        target: dataset.editing.edit_zip_dataset.GIERDataset
+        params:
+          path: data/GIER_editing_data/
+          split: train
+          min_resize_res: 256
+          max_resize_res: 256
+          crop_res: 256
+          flip_prob: 0.0
+          zip_start_index: 0
+          zip_end_index: 100
+          sample_weight: 2.0
+      - ds14:
+        target: dataset.editing.edit_zip_dataset.GQAInpaintDataset
+        params:
+          path: data/gqa-inpaint
+          min_resize_res: 256
+          max_resize_res: 256
+          crop_res: 256
+          flip_prob: 0.0
+      - ds15:
+        target: dataset.editing.edit_zip_dataset.MagicBrushDataset
+        params:
+          path: data/MagicBrush/
+          split: train
+          min_resize_res: 256
+          max_resize_res: 256
+          crop_res: 256
+          flip_prob: 0.5
+          zip_start_index: 0
+          zip_end_index: 100
+      - ds16:
+        target: dataset.editing.edit_zip_dataset.IEIWDataset
+        params:
+          path: data/ieiw/
+          split: train
+          min_resize_res: 256
+          max_resize_res: 256
+          crop_res: 256
+          flip_prob: 0.5
+
+    validation:
+      target: dataset.pose.pose.COCODataset
+      params:
+        root: data/coco/
+        image_set: val2017
+        is_train: False
+        max_prompt_num: 5
+        min_prompt_num: 1
+        radius: 10
+
+trainer:
+  initial_scale: 13
+  max_epochs: 200
+  save_freq: 5
+  accumulate_grad_batches: 1
+  clip_grad: 0.0
+  optimizer: adamw
