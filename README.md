@@ -3,7 +3,7 @@
 <p align="center">
   <a href="https://gengzigang.github.io/instructdiffusion.github.io/">Project Page</a> |
   <a href="https://arxiv.org/pdf/2309.03895.pdf">Arxiv</a> |
-  <a href="https://e0448e59d09dbe092f.gradio.live">Web Demo</a> |
+  <a href="https://acb537db903bfeb931.gradio.live">Web Demo</a> |
   <a href="#QuickStart">QuickStart</a> |
   <a href="#Training">Training</a> |
   <a href="#Acknowledge">Acknowledge</a> |
