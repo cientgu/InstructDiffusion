@@ -71,7 +71,7 @@ You can use the following command to download the official pre-trained stable di
    ```
 
 ### Data Preparation
-You can refer to the [dataset](https://github.com/Gengzigang/InstructDiffusion/tree/main/dataset) to prepare your data.
+You can refer to the [dataset](https://github.com/cientgu/InstructDiffusion/tree/main/dataset) to prepare your data.
 
 ### Training Command
 For multi-GPU training on a single machine, you can use the following command:
