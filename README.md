@@ -99,10 +99,23 @@ Thanks to
 ## Citation
 
 ```
-@inproceedings{Geng23instructdiff,
-	author={Zigang Geng, Binxin Yang, Tiankai Hang, Chen Li, Shuyang Gu, Ting Zhang, Jianmin Bao, Zheng Zhang, Han Hu, Dong Chen, Baining Guo},
-	title={InstructDiffusion: A Generalist Modeling Interface for Vision Tasks},
-	booktitle={{Arxiv}},
-	year={2023}, 
+@article{Geng23instructdiff,
+  author       = {Zigang Geng and
+                  Binxin Yang and
+                  Tiankai Hang and
+                  Chen Li and
+                  Shuyang Gu and
+                  Ting Zhang and
+                  Jianmin Bao and
+                  Zheng Zhang and
+                  Han Hu and
+                  Dong Chen and
+                  Baining Guo},
+  title        = {InstructDiffusion: {A} Generalist Modeling Interface for Vision Tasks},
+  journal      = {CoRR},
+  volume       = {abs/2309.03895},
+  year         = {2023},
+  url          = {https://doi.org/10.48550/arXiv.2309.03895},
+  doi          = {10.48550/arXiv.2309.03895},
 }
 ```
