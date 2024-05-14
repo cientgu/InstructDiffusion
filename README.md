@@ -99,7 +99,7 @@ Thanks to
 ## Citation
 
 ```
-@article{Geng23instructdiff,
+@inproceedings{Geng23instructdiff,
   author       = {Zigang Geng and
                   Binxin Yang and
                   Tiankai Hang and
@@ -112,10 +112,7 @@ Thanks to
                   Dong Chen and
                   Baining Guo},
   title        = {InstructDiffusion: {A} Generalist Modeling Interface for Vision Tasks},
-  journal      = {CoRR},
-  volume       = {abs/2309.03895},
-  year         = {2023},
-  url          = {https://doi.org/10.48550/arXiv.2309.03895},
-  doi          = {10.48550/arXiv.2309.03895},
+  booktitle = {Proc. CVPR},
+  year      = {2024},
 }
 ```
